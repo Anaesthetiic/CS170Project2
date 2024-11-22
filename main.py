@@ -1,5 +1,8 @@
 import random
-
+# EVAL FUNCTION STUB, RETURNS RANDOM %VAL
+def evalFunc(upperbound=100):
+    # return random.randint(0, upperbound)
+    return random.uniform(0, upperbound)
 # Not sure if we'll need this
 class Node:
     def __init__(self):
@@ -29,14 +32,28 @@ class Node:
         return self.highestAccuracy
 
 def forward_selection(n):
-    highestAccuracyPtr = None
-    currNode = None
-    firstIt = True
-    while firstIt or (currNode.get_highest_accuracy() > highestAccuracyPtr.get_highest_accuracy()):
-        firstIt = False
-        node = Node()
-        for i in range(n):      # for n features
-            node.add_data(evalFunc())   # feature i (indexed) has a eval of ___
+    selected_features = []
+    selected_node = Node()
+    while (len(selected_features) < int(n)):
+        highestAccuracyPtr = Node()
+        for i in range(1, int(n)+1):
+            if i not in selected_features:
+                currNode = Node()
+                currNode.set_highest_accuracy(evalFunc())
+                currNode.data = selected_features + [i]
+                print("Using feature(s) {} accuracy is {:.1f}".format(currNode.data, currNode.get_highest_accuracy()))
+                if (currNode.get_highest_accuracy() > highestAccuracyPtr.get_highest_accuracy()):
+                        highestAccuracyPtr = currNode
+        print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
+        if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
+            print("You're screwed, the latest highest accuracy was {:.2f}".format(selected_node.get_highest_accuracy()))
+            print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_features, selected_node.get_highest_accuracy()))
+            break
+        else:
+            selected_features = highestAccuracyPtr.data
+            selected_node = highestAccuracyPtr
+
+
 
 
 def backward_elimination(n):
@@ -63,7 +80,3 @@ def main():
 if __name__ == "__main__":
     main()
     
-# EVAL FUNCTION STUB, RETURNS RANDOM %VAL
-def evalFunc(upperbound=100):
-    # return random.randint(0, upperbound)
-    return random.uniform(0, upperbound)
