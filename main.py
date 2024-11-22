@@ -32,25 +32,25 @@ class Node:
         return self.highestAccuracy
 
 def forward_selection(n):
-    selected_features = []
+    # selected_features = []
     selected_node = Node()
-    while (len(selected_features) < int(n)):
+    while (len(selected_node.data) < int(n)):
         highestAccuracyPtr = Node()
         for i in range(1, int(n)+1):
-            if i not in selected_features:
+            if i not in selected_node.data:
                 currNode = Node()
                 currNode.set_highest_accuracy(evalFunc())
-                currNode.data = selected_features + [i]
+                currNode.data = selected_node.data + [i]
                 print("Using feature(s) {} accuracy is {:.1f}".format(currNode.data, currNode.get_highest_accuracy()))
                 if (currNode.get_highest_accuracy() > highestAccuracyPtr.get_highest_accuracy()):
                         highestAccuracyPtr = currNode
         print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
         if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
+            selected_node.data = highestAccuracyPtr.data
             print("You're screwed, the latest highest accuracy was {:.2f}".format(selected_node.get_highest_accuracy()))
-            print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_features, selected_node.get_highest_accuracy()))
+            print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_node.data, selected_node.get_highest_accuracy()))
             break
         else:
-            selected_features = highestAccuracyPtr.data
             selected_node = highestAccuracyPtr
 
 
