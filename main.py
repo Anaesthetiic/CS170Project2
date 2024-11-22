@@ -46,7 +46,6 @@ def forward_selection(n):
                         highestAccuracyPtr = currNode
         print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
         if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
-            selected_node.data = highestAccuracyPtr.data
             print("You're screwed, the latest highest accuracy was {:.2f}".format(selected_node.get_highest_accuracy()))
             print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_node.data, selected_node.get_highest_accuracy()))
             break
@@ -57,7 +56,29 @@ def forward_selection(n):
 
 
 def backward_elimination(n):
-    pass
+    selected_node = Node()
+    for i in range(1, int(n)+1):
+        selected_node.add_data(i)
+    print(selected_node.data)
+
+    while (len(selected_node.data) > 1):
+        highestAccuracyPtr = Node()
+        for i in reversed(range(1, int(n)+1)):
+            if i in selected_node.data:
+                currNode = Node()
+                currNode.set_highest_accuracy(evalFunc())
+                currNode.data = selected_node.data.copy()
+                currNode.data.remove(i)
+                print("Using feature(s) {} accuracy is {:.1f}".format(currNode.data, currNode.get_highest_accuracy()))
+                if (currNode.get_highest_accuracy() >= highestAccuracyPtr.get_highest_accuracy()):
+                        highestAccuracyPtr = currNode
+        print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
+        if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
+            print("You're screwed, the latest highest accuracy was {:.2f}".format(selected_node.get_highest_accuracy()))
+            print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_node.data, selected_node.get_highest_accuracy()))
+            break
+        else:
+            selected_node = highestAccuracyPtr
 
 def main():
     print("Welcome to afranco/tcast054's Feature Selection Algorithm.")
