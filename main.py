@@ -34,6 +34,8 @@ class Node:
 def forward_selection(n):
     # selected_features = []
     selected_node = Node()
+    print("Using no features and “random” evaluation, I get an accuracy of {:.1f}%\n".format(evalFunc()))
+    print("Beginning search.\n")
     while (len(selected_node.data) < int(n)):
         highestAccuracyPtr = Node()
         for i in range(1, int(n)+1):
@@ -46,7 +48,7 @@ def forward_selection(n):
                         highestAccuracyPtr = currNode
         print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
         if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
-            print("You're screwed, the latest highest accuracy was {:.2f}".format(selected_node.get_highest_accuracy()))
+            print("(Warning, Accuracy has decreased!)")
             print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_node.data, selected_node.get_highest_accuracy()))
             break
         else:
@@ -57,6 +59,7 @@ def forward_selection(n):
 
 def backward_elimination(n):
     selected_node = Node()
+    print("Using no features and “random” evaluation, I get an accuracy of {:.1f}%\n".format(evalFunc()))
     for i in range(1, int(n)+1):
         selected_node.add_data(i)
     print(selected_node.data)
@@ -74,7 +77,7 @@ def backward_elimination(n):
                         highestAccuracyPtr = currNode
         print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
         if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
-            print("You're screwed, the latest highest accuracy was {:.2f}".format(selected_node.get_highest_accuracy()))
+            print("(Warning, Accuracy has decreased!)")
             print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_node.data, selected_node.get_highest_accuracy()))
             break
         else:
@@ -89,7 +92,6 @@ def main():
     # print("3. Bertie’s Special Algorithm.")
     choice = input("Option: ")
     if choice == '1':
-        print("Beginning search.\n")
         forward_selection(total_features)
     elif choice == '2':
         backward_elimination(total_features)
