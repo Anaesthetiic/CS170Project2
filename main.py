@@ -98,7 +98,6 @@ class Classifier:
         # print("\nhello world")
         # print(training_instances)
         self.data.append(training_instances)
-        self.data.append(training_instances)
         # for i in range(training_instances.shape[0]):
         #     self.labels.append(float(training_instances.iloc[i,0]))
         #     self.features.append(training_instances.iloc[i, 1:].values.tolist())
@@ -106,7 +105,6 @@ class Classifier:
     def test(self, test_instance):
         distances = []
         test_features = test_instance[1:]
-        for train_instance in self.data:
         for train_instance in self.data:
             # print(test_instance.iloc[i])
             # print(self.data.iloc[i])
@@ -117,8 +115,6 @@ class Classifier:
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
 
         return self.data[nearest][0]
-        return self.data[nearest][0]
-
 class Validator:
     
     # Implemented using leave-one-out validation method
@@ -127,7 +123,7 @@ class Validator:
     # ex: NN(["Feature 1", "Feature 2", "Feature 5"], classifier, df)
     @staticmethod
     def NN(feature: List[str], classifier, dataset: pd.DataFrame):
-        num_instances = dataset.size      # num instances
+        num_instances = dataset.shape[0]    # num instances
         correct_count = 0                   # tracks accuracy
         # repeat reserving single instance for all instances 
         for testInstance in range(num_instances):
@@ -135,13 +131,13 @@ class Validator:
             print(f"Reserving instance {testInstance} as test data. Using other instances as training data.")
             
             for instance in range(num_instances):
+                # print(dataset.iloc[instance])
                 if(instance == testInstance): pass    # pass if instance we want to reserve
                 else:
                     # classifier.train() - train NN 
-                    classifier.train(instance)
+                    classifier.train(dataset.iloc[instance])
             print("\tTraining Complete.")     # training complete at this point
-            
-            # test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
+        #     test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
             # classifier.test()
             prediction = classifier.test(dataset.iloc[testInstance])  # 1 or 2
             output_bool = (prediction == dataset.iloc[testInstance]["Classifier"])
@@ -149,7 +145,7 @@ class Validator:
                 correct_count += 1
             else: # NN output is incorrect
                 pass
-            print(f"\tCheck if Classifier Test outputs correct classifier. {prediction} == {dataset.iloc[testInstance]["Classifier"]} is {output_bool}")
+            print(f"\tCheck if Classifier Test outputs correct classifier. {prediction} == {dataset.iloc[testInstance]['Classifier']} is {output_bool}")
             
 
         accuracy = correct_count / num_instances
@@ -195,13 +191,14 @@ def main():
 
         # print(df)
         normalized_df=(df-df.min())/(df.max()-df.min())     # Min-max Normalization https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
-        print(normalized_df)
+        # print(normalized_df)
         
         classifier = Classifier()
-        classifier.train(normalized_df)
-        prediction = classifier.test(normalized_df.iloc[0])
-        print(prediction)
-        print(normalized_df.iloc[0,0])
+        # for i in range(len(normalized_df)):
+        #     classifier.train(normalized_df.iloc[i])
+        # prediction = classifier.test(normalized_df.iloc[0])
+        # print(prediction)
+        # print(normalized_df.iloc[0])
     
         #print(normalized_df.iloc[1]["Feature 2"]) Example of how to reference index and feature
     
@@ -209,7 +206,7 @@ def main():
             start_time = time.time()
             test_df = normalized_df.loc[:, ["Classifier", "Feature 3", "Feature 5", "Feature 7"]]
             # print(test_df)
-
+    
             accuracy = Validator.NN(["Feature 3", "Feature 5", "Feature 7"], classifier, test_df)
             end_time = time.time()
 
