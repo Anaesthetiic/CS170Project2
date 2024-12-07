@@ -92,10 +92,12 @@ def backward_elimination(n):
 class Classifier:
     def __init__(self):
         self.data = []
+        self.data = []
 
     def train(self, training_instances):
         # print("\nhello world")
         # print(training_instances)
+        self.data.append(training_instances)
         self.data.append(training_instances)
         # for i in range(training_instances.shape[0]):
         #     self.labels.append(float(training_instances.iloc[i,0]))
@@ -105,13 +107,16 @@ class Classifier:
         distances = []
         test_features = test_instance[1:]
         for train_instance in self.data:
+        for train_instance in self.data:
             # print(test_instance.iloc[i])
             # print(self.data.iloc[i])
+            train_features = train_instance[1:]
             train_features = train_instance[1:]
             distances.append(euclidean_distance(test_features, train_features))
         nearest = distances.index(min(distances))
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
 
+        return self.data[nearest][0]
         return self.data[nearest][0]
 
 class Validator:
@@ -193,10 +198,10 @@ def main():
         print(normalized_df)
         
         classifier = Classifier()
-        # classifier.train(normalized_df)
-        # prediction = classifier.test(normalized_df.iloc[0])
-        # print(prediction)
-        # print(normalized_df.iloc[0,0])
+        classifier.train(normalized_df)
+        prediction = classifier.test(normalized_df.iloc[0])
+        print(prediction)
+        print(normalized_df.iloc[0,0])
     
         #print(normalized_df.iloc[1]["Feature 2"]) Example of how to reference index and feature
     
