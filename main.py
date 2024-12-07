@@ -107,7 +107,6 @@ class Classifier:
         distances = []
         test_features = test_instance[1:]
         for train_instance in self.data:
-        for train_instance in self.data:
             # print(test_instance.iloc[i])
             # print(self.data.iloc[i])
             train_features = train_instance[1:]
@@ -116,7 +115,6 @@ class Classifier:
         nearest = distances.index(min(distances))
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
 
-        return self.data[nearest][0]
         return self.data[nearest][0]
 
 class Validator:
