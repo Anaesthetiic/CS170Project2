@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 import random
 import pandas as pd                 # pip install pandas
-<<<<<<< HEAD
-=======
 from typing import List
 import time
->>>>>>> fa260adb07000cfd354810ed2f5b0826966903b9
 
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
@@ -177,11 +173,6 @@ def main():
         choice = input("Option: ")
         if choice == '1':
             filename = "small-test-dataset.txt"
-<<<<<<< HEAD
-=======
-            df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    
-            # separated by whitespace, expect 10 features
->>>>>>> fa260adb07000cfd354810ed2f5b0826966903b9
         elif choice == '2':
             filename = "large-test-dataset.txt"
         # readDataset(filename)
@@ -196,29 +187,6 @@ def main():
         print(normalized_df.iloc[0,0])
     
         #print(normalized_df.iloc[1]["Feature 2"]) Example of how to reference index and feature
-<<<<<<< HEAD
-=======
-        # print(normalized_df.iloc["Feature 1"])
-        
-        if choice == '1':
-            start_time = time.time()
-            accuracy = 0    # placeholder
-            # accuracy = Validator.NN(["Feature 3", "Feature 5", "Feature 7"], classifier, normalized_df)
-            end_time = time.time()
-
-            print(f"Accuracy = {accuracy}")
-            print(f"Time taken = {end_time - start_time} seconds")
-            print("Feature {3, 5, 7}, accuracy should be about 0.89")
-        elif choice == '2':
-            start_time = time.time()
-            accuracy = 0    # placeholder
-            # accuracy = Validator.NN(["Feature 1", "Feature 15", "Feature 27"], classifier, normalized_df)
-            end_time = time.time()
-
-            print(f"Accuracy = {accuracy}")
-            print(f"Time taken = {end_time - start_time} seconds")
-            print("Feature {1, 15, 27} accuracy should be about 0.949")
->>>>>>> fa260adb07000cfd354810ed2f5b0826966903b9
         
     elif choice == '3':
         pass
