@@ -91,12 +91,12 @@ def backward_elimination(n):
 
 class Classifier:
     def __init__(self):
-        self.data = None
+        self.data = []
 
     def train(self, training_instances):
         # print("\nhello world")
         # print(training_instances)
-        self.data = training_instances
+        self.data.append(training_instances)
         # for i in range(training_instances.shape[0]):
         #     self.labels.append(float(training_instances.iloc[i,0]))
         #     self.features.append(training_instances.iloc[i, 1:].values.tolist())
@@ -104,15 +104,15 @@ class Classifier:
     def test(self, test_instance):
         distances = []
         test_features = test_instance[1:]
-        for i in range(1,len(self.data)):
+        for train_instance in self.data:
             # print(test_instance.iloc[i])
             # print(self.data.iloc[i])
-            train_features = self.data.iloc[i, 1:]
+            train_features = train_instance[1:]
             distances.append(euclidean_distance(test_features, train_features))
         nearest = distances.index(min(distances))
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
 
-        return self.data.iloc[nearest, 0]
+        return self.data[nearest][0]
 
 class Validator:
     
@@ -184,12 +184,14 @@ def main():
         df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    # separated by two spaces, expect 10 features
         # print(df)
         normalized_df=(df-df.min())/(df.max()-df.min())     # Min-max Normalization https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
-        # print(normalized_df)
         classifier = Classifier()
-        classifier.train(normalized_df)
-        prediction = classifier.test(normalized_df.iloc[0])
+        # print(normalized_df)
+        for i in range(len(normalized_df)):
+            classifier.train(normalized_df.iloc[i])
+        # for _, instance in normalized_df.iterrows():
+        #     classifier.train()
+        prediction = classifier.test(normalized_df.iloc[1])
         print(prediction)
-        print(normalized_df.iloc[0,0])
     
         #print(normalized_df.iloc[1]["Feature 2"]) Example of how to reference index and feature
         
