@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import random
 import pandas as pd                 # pip install pandas
 
@@ -112,6 +113,37 @@ class Classifier:
 
         return self.data.iloc[nearest, 0]
 
+class Validator:
+    
+    # Implemented using leave-one-out validation method
+    # Input: feature is list of strings corresponding to name of column for feature subset , classifier object, dataset (DataFrame or df)
+    # Output: Float representing accuracy [0..1]
+    # ex: NN(["Feature 1", "Feature 2", "Feature 5"], classifier, df)
+    @staticmethod
+    def NN(feature: List[str], classifier, dataset: pd.DataFrame):
+        num_instances = dataset.size()      # num instances
+        correct_count = 0                   # tracks accuracy
+        # repeat reserving single instance for all instances 
+        for testInstance in range(num_instances):
+            # reserve testInstance as test data, use other instances as training data
+            for instance in range(num_instances):
+                if(instance == testInstance): pass    # pass if instance we want to reserve
+                else:
+                    # classifier.train() - train NN 
+                    pass
+            # training complete at this point
+            
+            # test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
+            # classifier.test()
+            output = 0  # 1 or 2
+            if(output == dataset.iloc[testInstance]["Classifier"]): # NN output is correct
+                correct_count += 1
+            else: # NN output is incorrect
+                pass
+            
+            accuracy = correct_count / num_instances
+            return accuracy
+        
 def main():
     print("1. Part 1")
     print("2. Part 2")
