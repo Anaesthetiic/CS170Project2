@@ -91,12 +91,12 @@ def backward_elimination(n):
 
 class Classifier:
     def __init__(self):
-        self.data = None
+        self.data = []
 
     def train(self, training_instances):
         # print("\nhello world")
         # print(training_instances)
-        self.data = training_instances
+        self.data.append(training_instances)
         # for i in range(training_instances.shape[0]):
         #     self.labels.append(float(training_instances.iloc[i,0]))
         #     self.features.append(training_instances.iloc[i, 1:].values.tolist())
@@ -104,25 +104,25 @@ class Classifier:
     def test(self, test_instance):
         distances = []
         test_features = test_instance[1:]
-        for i in range(1,len(self.data)):
+        for train_instance in self.data:
             # print(test_instance.iloc[i])
             # print(self.data.iloc[i])
-            train_features = self.data.iloc[i, 1:]
+            train_features = train_instance[1:]
             distances.append(euclidean_distance(test_features, train_features))
         nearest = distances.index(min(distances))
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
 
-        return self.data.iloc[nearest, 0]
+        return self.data[nearest][0]
 
 class Validator:
     
     # Implemented using leave-one-out validation method
-    # Input: feature is list of strings corresponding to name of column for feature subset , classifier object, dataset (DataFrame or df)
+    # Input: feature is list of strings corresponding to name of column for feature subset , classifier object, dataset (DataFrame or df) of only feature subset
     # Output: Float representing accuracy [0..1]
     # ex: NN(["Feature 1", "Feature 2", "Feature 5"], classifier, df)
     @staticmethod
     def NN(feature: List[str], classifier, dataset: pd.DataFrame):
-        num_instances = dataset.size()      # num instances
+        num_instances = dataset.size      # num instances
         correct_count = 0                   # tracks accuracy
         # repeat reserving single instance for all instances 
         for testInstance in range(num_instances):
@@ -133,26 +133,26 @@ class Validator:
                 if(instance == testInstance): pass    # pass if instance we want to reserve
                 else:
                     # classifier.train() - train NN 
-                    pass
+                    classifier.train(instance)
             print("\tTraining Complete.")     # training complete at this point
             
             # test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
             # classifier.test()
-            output = 0  # 1 or 2
-            output_bool = output == dataset.iloc[testInstance]["Classifier"]
+            prediction = classifier.test(dataset.iloc[testInstance])  # 1 or 2
+            output_bool = (prediction == dataset.iloc[testInstance]["Classifier"])
             if(output_bool): # NN output is correct
                 correct_count += 1
             else: # NN output is incorrect
                 pass
-            print(f"\tCheck if Classifier Test outputs correct classifier. {output} == {dataset.iloc[testInstance]["Classifier"]} is {output_bool}")
+            print(f"\tCheck if Classifier Test outputs correct classifier. {prediction} == {dataset.iloc[testInstance]["Classifier"]} is {output_bool}")
             
 
         accuracy = correct_count / num_instances
         return accuracy
     
 def main():
-    print("1. Part 1")
-    print("2. Part 2")
+    print("1. Part 1: Forward Selection/Backward Elimination")
+    print("2. Part 2: Nearest Neighbor")
     print("3. Part 3")
     choice = input("Option: ")
     if choice == '1':
@@ -161,8 +161,6 @@ def main():
         print("Type the number of the algorithm you want to run.")
         print("1. Forward Selection")
         print("2. Backward Elimination")
-        print("3. Nearest Neighbor")
-        # print("3. Bertie’s Special Algorithm.")
         choice = input("Option: ")
         if choice == '1':
             forward_selection(total_features)
@@ -176,22 +174,52 @@ def main():
         print("2. Large Test Dataset")
         print("Select a Dataset: ")
         choice = input("Option: ")
+
+        df = pd.DataFrame
+
         if choice == '1':
             filename = "small-test-dataset.txt"
+            df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    
+            # separated by whitespace, expect 10 features
         elif choice == '2':
             filename = "large-test-dataset.txt"
-        # readDataset(filename)
-        df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    # separated by two spaces, expect 10 features
+            df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10", "Feature 11", "Feature 12", "Feature 13", "Feature 14", "Feature 15", "Feature 16", "Feature 17", "Feature 18", "Feature 19", "Feature 20", "Feature 21", "Feature 22", "Feature 23", "Feature 24", "Feature 25", "Feature 26", "Feature 27", "Feature 28", "Feature 29", "Feature 30", "Feature 31", "Feature 32", "Feature 33", "Feature 34", "Feature 35", "Feature 36", "Feature 37", "Feature 38", "Feature 39", "Feature 40"])  
+            # separated by whitespace, expect 40 features
+        else:
+            print("Invalid option. Please select 1 or 2")
+
         # print(df)
         normalized_df=(df-df.min())/(df.max()-df.min())     # Min-max Normalization https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
-        # print(normalized_df)
+        print(normalized_df)
+        
         classifier = Classifier()
-        classifier.train(normalized_df)
-        prediction = classifier.test(normalized_df.iloc[0])
-        print(prediction)
-        print(normalized_df.iloc[0,0])
+        # classifier.train(normalized_df)
+        # prediction = classifier.test(normalized_df.iloc[0])
+        # print(prediction)
+        # print(normalized_df.iloc[0,0])
     
         #print(normalized_df.iloc[1]["Feature 2"]) Example of how to reference index and feature
+    
+        if choice == '1':
+            start_time = time.time()
+            test_df = normalized_df.loc[:, ["Classifier", "Feature 3", "Feature 5", "Feature 7"]]
+            # print(test_df)
+
+            accuracy = Validator.NN(["Feature 3", "Feature 5", "Feature 7"], classifier, test_df)
+            end_time = time.time()
+
+            print(f"Accuracy = {accuracy}")
+            print(f"Time taken = {end_time - start_time} seconds")
+            print("Feature {3, 5, 7}, accuracy should be about 0.89")
+        elif choice == '2':
+            start_time = time.time()
+            test_df = normalized_df.loc[:, ["Classifier", "Feature 1", "Feature 15", "Feature 27"]]
+            accuracy = Validator.NN(["Classifier", "Feature 1", "Feature 15", "Feature 27"], classifier, test_df)
+            end_time = time.time()
+
+            print(f"Accuracy = {accuracy}")
+            print(f"Time taken = {end_time - start_time} seconds")
+            print("Feature {1, 15, 27} accuracy should be about 0.949")
         
     elif choice == '3':
         pass
