@@ -109,12 +109,11 @@ class Classifier:
             # print(test_instance.iloc[i])
             # print(self.data.iloc[i])
             train_features = train_instance[1:]
-            train_features = train_instance[1:]
+           
             distances.append(euclidean_distance(test_features, train_features))
         nearest = distances.index(min(distances))
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
-
-        return self.data[nearest][0]
+        return self.data[nearest].iloc[0]
 
 
 class Validator:
@@ -131,24 +130,25 @@ class Validator:
         for testInstance in range(num_instances):
             # reserve testInstance as test data, use other instances as training data
             print(f"Reserving instance {testInstance} as test data. Using other instances as training data.")
-            
+            classifier.data = []
             for instance in range(num_instances):
                 # print(dataset.iloc[instance])
                 if(instance == testInstance): pass    # pass if instance we want to reserve
                 else:
                     # classifier.train() - train NN 
+                    # print(f"Training on instance {instance}")
                     classifier.train(dataset.iloc[instance])
             print("\tTraining Complete.")     # training complete at this point
-        #     test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
+            # test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
             # classifier.test()
             prediction = classifier.test(dataset.iloc[testInstance])  # 1 or 2
+            # print(classifier.data[0])
             output_bool = (prediction == dataset.iloc[testInstance]["Classifier"])
             if(output_bool): # NN output is correct
                 correct_count += 1
             else: # NN output is incorrect
                 pass
             print(f"\tCheck if Classifier Test outputs correct classifier. {prediction} == {dataset.iloc[testInstance]['Classifier']} is {output_bool}")
-            
 
         accuracy = correct_count / num_instances
         return accuracy
