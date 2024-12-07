@@ -1,6 +1,7 @@
 import random
 import pandas as pd                 # pip install pandas
 from typing import List
+import time
 
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
@@ -151,7 +152,8 @@ def main():
         
         if choice == '1':
             filename = "small-test-dataset.txt"
-            df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    # separated by whitespace, expect 10 features
+            df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    
+            # separated by whitespace, expect 10 features
         elif choice == '2':
             filename = "large-test-dataset.txt"
             df = pd.read_csv(filename, sep='\s+', engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10", "Feature 11", "Feature 12", "Feature 13", "Feature 14", "Feature 15", "Feature 16", "Feature 17", "Feature 18", "Feature 19", "Feature 20", "Feature 21", "Feature 22", "Feature 23", "Feature 24", "Feature 25", "Feature 26", "Feature 27", "Feature 28", "Feature 29", "Feature 30", "Feature 31", "Feature 32", "Feature 33", "Feature 34", "Feature 35", "Feature 36", "Feature 37", "Feature 38", "Feature 39", "Feature 40"])  
@@ -167,11 +169,23 @@ def main():
         # print(normalized_df.iloc["Feature 1"])
         
         if choice == '1':
+            start_time = time.time()
+            accuracy = 0    # placeholder
+            # accuracy = Validator.NN(["Feature 3", "Feature 5", "Feature 7"], classifier, normalized_df)
+            end_time = time.time()
+
+            print(f"Accuracy = {accuracy}")
+            print(f"Time taken = {end_time - start_time} seconds")
             print("Feature {3, 5, 7}, accuracy should be about 0.89")
-            # print("Accuracy = " + Validator.NN(["Feature 3", "Feature 5", "Feature 7"], classifier, df))
         elif choice == '2':
+            start_time = time.time()
+            accuracy = 0    # placeholder
+            # accuracy = Validator.NN(["Feature 1", "Feature 15", "Feature 27"], classifier, normalized_df)
+            end_time = time.time()
+
+            print(f"Accuracy = {accuracy}")
+            print(f"Time taken = {end_time - start_time} seconds")
             print("Feature {1, 15, 27} accuracy should be about 0.949")
-            # print("Accuracy = " + Validator.NN(["Feature 1", "Feature 15", "Feature 27"], classifier, df))
         
     elif choice == '3':
         pass
