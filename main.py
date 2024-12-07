@@ -103,23 +103,27 @@ class Validator:
         # repeat reserving single instance for all instances 
         for testInstance in range(num_instances):
             # reserve testInstance as test data, use other instances as training data
+            print(f"Reserving instance {testInstance} as test data. Using other instances as training data.")
+            
             for instance in range(num_instances):
                 if(instance == testInstance): pass    # pass if instance we want to reserve
                 else:
                     # classifier.train() - train NN 
                     pass
-            # training complete at this point
+            print("\tTraining Complete.")     # training complete at this point
             
             # test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
             # classifier.test()
             output = 0  # 1 or 2
-            if(output == dataset.iloc[testInstance]["Classifier"]): # NN output is correct
+            output_bool = output == dataset.iloc[testInstance]["Classifier"]
+            if(output_bool): # NN output is correct
                 correct_count += 1
             else: # NN output is incorrect
                 pass
+            print(f"\tCheck if Classifier Test outputs correct classifier. {output} == {dataset.iloc[testInstance]["Classifier"]} is {output_bool}")
             
-            accuracy = correct_count / num_instances
-            return accuracy
+        accuracy = correct_count / num_instances
+        return accuracy
     
 
 
