@@ -1,6 +1,5 @@
 import random
 import pandas as pd                 # pip install pandas
-from sklearn import preprocessing   # pip install scikit-learn
 
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
