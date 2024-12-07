@@ -1,4 +1,6 @@
 import random
+import pandas as pd                 # pip install pandas
+
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
     # return random.randint(0, upperbound)
@@ -84,22 +86,49 @@ def backward_elimination(n):
             selected_node = highestAccuracyPtr
 
 def main():
-    print("Welcome to afranco/tcast054's Feature Selection Algorithm.")
-    total_features = input("Please enter total number of features: ")
-    print("Type the number of the algorithm you want to run.")
-    print("1. Forward Selection")
-    print("2. Backward Elimination")
-    # print("3. Bertie’s Special Algorithm.")
+    print("1. Part 1")
+    print("2. Part 2")
+    print("3. Part 3")
     choice = input("Option: ")
     if choice == '1':
-        forward_selection(total_features)
+        print("Welcome to afranco/tcast054's Feature Selection Algorithm.")
+        total_features = input("Please enter total number of features: ")
+        print("Type the number of the algorithm you want to run.")
+        print("1. Forward Selection")
+        print("2. Backward Elimination")
+        print("3. Nearest Neighbor")
+        # print("3. Bertie’s Special Algorithm.")
+        choice = input("Option: ")
+        if choice == '1':
+            forward_selection(total_features)
+        elif choice == '2':
+            backward_elimination(total_features)    
+        else:
+            print("Invalid option. Please select 1, 2, or 3.")
+
     elif choice == '2':
-        backward_elimination(total_features)
-    # elif choice == '3':
-    #     berties_special_algorithm(total_features)
+        print("1. Small Test Dataset")
+        print("2. Large Test Dataset")
+        print("Select a Dataset: ")
+        choice = input("Option: ")
+        if choice == '1':
+            filename = "small-test-dataset.txt"
+        elif choice == '2':
+            filename = "large-test-dataset.txt"
+        # readDataset(filename)
+        df = pd.read_csv(filename, delim_whitespace=True, engine="python", names=["Classifier", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 6", "Feature 7", "Feature 8", "Feature 9", "Feature 10"])    # separated by two spaces, expect 10 features
+        # print(df)
+        normalized_df=(df-df.min())/(df.max()-df.min())     # Min-max Normalization https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
+        print(normalized_df)
+    
+        #print(normalized_df.iloc[1]["Feature 2"]) Example of how to reference index and feature
+        
+    elif choice == '3':
+        pass
     else:
         print("Invalid option. Please select 1, 2, or 3.")
+    
 
 if __name__ == "__main__":
     main()
-    
+
