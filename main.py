@@ -2,6 +2,7 @@ import random
 import pandas as pd                 # pip install pandas
 from typing import List
 import time
+from sklearn.preprocessing import MinMaxScaler
 
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
@@ -192,7 +193,12 @@ def main():
             print("Invalid option. Please select 1 or 2")
 
         # print(df)
-        normalized_df=(df-df.min())/(df.max()-df.min())     # Min-max Normalization https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
+        scaler = MinMaxScaler()
+        cols_to_normalize = df.columns[1:]
+        df[cols_to_normalize] = scaler.fit_transform(df[cols_to_normalize])
+        normalized_df = df
+        print(normalized_df)
+        # normalized_df=(df-df.min())/(df.max()-df.min())     # Min-max Normalization https://stackoverflow.com/questions/26414913/normalize-columns-of-a-dataframe
         # print(normalized_df)
         
         classifier = Classifier()
