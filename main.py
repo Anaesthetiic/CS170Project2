@@ -115,6 +115,8 @@ class Classifier:
         # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
 
         return self.data[nearest][0]
+
+
 class Validator:
     
     # Implemented using leave-one-out validation method
