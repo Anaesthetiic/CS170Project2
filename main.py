@@ -3,6 +3,7 @@ import pandas as pd                 # pip install pandas
 from typing import List
 import time
 from sklearn.preprocessing import MinMaxScaler
+from tqdm import tqdm
 
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
@@ -36,25 +37,103 @@ class Node:
     def get_highest_accuracy(self):
         return self.highestAccuracy
 
-def forward_selection(n):
+
+class Classifier:
+    def __init__(self):
+        self.data = []
+        self.data = []
+
+    def train(self, training_instances):
+        # print("\nhello world")
+        # print(training_instances)
+        self.data.append(training_instances)
+        # for i in range(training_instances.shape[0]):
+        #     self.labels.append(float(training_instances.iloc[i,0]))
+        #     self.features.append(training_instances.iloc[i, 1:].values.tolist())
+        
+    def test(self, test_instance):
+        distances = []
+        test_features = test_instance[1:].values
+        # print(test_features)
+        # print(self.data[0].shape[0])
+        for train_instance in range(self.data[0].shape[0]):
+            train_features = self.data[0].iloc[train_instance][1:].values
+            # print(train_features)
+            distance = euclidean_distance(test_features, train_features)
+            distances.append(distance)
+            # print(f"Distance between (i = {train_instance}) {test_features} and {train_features} is {distance}")
+        # print(distances)
+        nearest = distances.index(min(distances))
+        # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
+        # print(self.data[0].iloc[nearest,0])
+        return self.data[0].iloc[nearest,0]
+    
+
+class Validator:
+    
+    # Implemented using leave-one-out validation method
+    # Input: feature is list of strings corresponding to name of column for feature subset , classifier object, dataset (DataFrame or df) of only feature subset
+    # Output: Float representing accuracy [0..1]
+    # ex: NN(["Feature 1", "Feature 2", "Feature 5"], classifier, df)
+    @staticmethod
+    def NN(feature: List[str], classifier, dataset: pd.DataFrame):
+        num_instances = dataset.shape[0]    # num instances
+        correct_count = 0                   # tracks accuracy
+        # print(target_feature)
+        # repeat reserving single instance for all instances 
+        for testInstance in tqdm(range(num_instances), desc="Processing instances for feature \"{}\"".format(feature), unit="instance"): # https://www.geeksforgeeks.org/progress-bars-in-python/
+            # reserve testInstance as test data, use other instances as training data
+            # print(f"Reserving instance {testInstance} as test data. Using other instances as training data.")
+            classifier.data = []
+            training_data = dataset.drop(testInstance)
+            classifier.train(training_data)
+            test_row = dataset.iloc[testInstance]
+            prediction = classifier.test(test_row)
+            output_bool = (prediction == dataset.iloc[testInstance][feature])
+            if(output_bool): # NN output is correct
+                correct_count += 1
+            else: # NN output is incorrect
+                pass
+            # print(f"\tCheck if Classifier Test outputs correct classifier. {prediction} == {dataset.iloc[testInstance][feature]} is {output_bool}")
+
+        accuracy = correct_count / num_instances
+        return accuracy
+
+
+
+def forward_selection(n, feature_names, classifier, dataset):
     # selected_features = []
     selected_node = Node()
+    target_feature = feature_names[0]
     print("Using no features and “random” evaluation, I get an accuracy of {:.1f}%\n".format(evalFunc()))
     print("Beginning search.\n")
+
+    feature_subset_cache = {}
+    
     while (len(selected_node.data) < int(n)):
         highestAccuracyPtr = Node()
         for i in range(1, int(n)+1):
             if i not in selected_node.data:
                 currNode = Node()
-                currNode.set_highest_accuracy(evalFunc())
+                # print(feature_names[i])
+                selected_features = [target_feature] + [feature_names[j] for j in selected_node.data] + [feature_names[i]]
+                feature_subset_key = tuple(sorted(selected_features))
+                if feature_subset_key not in feature_subset_cache:
+                    datasubset = dataset[selected_features].copy()
+                    feature_subset_cache[feature_subset_key] = datasubset
+                else:
+                    datasubset = feature_subset_cache[feature_subset_key]
+                    
+                # print(datasubset)
+                currNode.set_highest_accuracy(Validator.NN(target_feature, classifier, datasubset))
                 currNode.data = selected_node.data + [i]
-                print("Using feature(s) {} accuracy is {:.1f}".format(currNode.data, currNode.get_highest_accuracy()))
+                print("\nUsing feature(s) {} accuracy is {:.2f}\n".format([feature_names[j] for j in currNode.data], currNode.get_highest_accuracy()))
                 if (currNode.get_highest_accuracy() > highestAccuracyPtr.get_highest_accuracy()):
                         highestAccuracyPtr = currNode
-        print("\nFeature set {} was best, accuracy is {:.1f}\n".format(highestAccuracyPtr.data, highestAccuracyPtr.get_highest_accuracy()))
+        print("\nFeature set {} was best, accuracy is {:.2f}\n".format([feature_names[j] for j in highestAccuracyPtr.data], highestAccuracyPtr.get_highest_accuracy()))
         if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
             print("(Warning, Accuracy has decreased!)")
-            print("Best feature subset is {}, which has an accuracy of {:.2f}".format(selected_node.data, selected_node.get_highest_accuracy()))
+            print("Best feature subset is {}, which has an accuracy of {:.2f}".format([feature_names[j] for j in selected_node.data], selected_node.get_highest_accuracy()))
             break
         else:
             selected_node = highestAccuracyPtr
@@ -90,74 +169,14 @@ def backward_elimination(n):
         else:
             selected_node = highestAccuracyPtr
 
-class Classifier:
-    def __init__(self):
-        self.data = []
-        self.data = []
-
-    def train(self, training_instances):
-        # print("\nhello world")
-        # print(training_instances)
-        self.data.append(training_instances)
-        # for i in range(training_instances.shape[0]):
-        #     self.labels.append(float(training_instances.iloc[i,0]))
-        #     self.features.append(training_instances.iloc[i, 1:].values.tolist())
-        
-    def test(self, test_instance):
-        distances = []
-        test_features = test_instance[1:]
-        for train_instance in self.data:
-            # print(test_instance.iloc[i])
-            # print(self.data.iloc[i])
-            train_features = train_instance[1:]
-           
-            distances.append(euclidean_distance(test_features, train_features))
-        nearest = distances.index(min(distances))
-        # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
-        return self.data[nearest].iloc[0]
 
 
-class Validator:
-    
-    # Implemented using leave-one-out validation method
-    # Input: feature is list of strings corresponding to name of column for feature subset , classifier object, dataset (DataFrame or df) of only feature subset
-    # Output: Float representing accuracy [0..1]
-    # ex: NN(["Feature 1", "Feature 2", "Feature 5"], classifier, df)
-    @staticmethod
-    def NN(feature: List[str], classifier, dataset: pd.DataFrame):
-        num_instances = dataset.shape[0]    # num instances
-        correct_count = 0                   # tracks accuracy
-        # repeat reserving single instance for all instances 
-        for testInstance in range(num_instances):
-            # reserve testInstance as test data, use other instances as training data
-            print(f"Reserving instance {testInstance} as test data. Using other instances as training data.")
-            classifier.data = []
-            for instance in range(num_instances):
-                # print(dataset.iloc[instance])
-                if(instance == testInstance): pass    # pass if instance we want to reserve
-                else:
-                    # classifier.train() - train NN 
-                    # print(f"Training on instance {instance}")
-                    classifier.train(dataset.iloc[instance])
-            print("\tTraining Complete.")     # training complete at this point
-            # test NN output, compare to known answer at dataset.iloc[testInstance]["Classifier"]
-            # classifier.test()
-            prediction = classifier.test(dataset.iloc[testInstance])  # 1 or 2
-            # print(classifier.data[0])
-            output_bool = (prediction == dataset.iloc[testInstance]["Classifier"])
-            if(output_bool): # NN output is correct
-                correct_count += 1
-            else: # NN output is incorrect
-                pass
-            print(f"\tCheck if Classifier Test outputs correct classifier. {prediction} == {dataset.iloc[testInstance]['Classifier']} is {output_bool}")
 
-        accuracy = correct_count / num_instances
-        return accuracy
     
 def main():
     print("1. Part 1: Forward Selection/Backward Elimination")
     print("2. Part 2: Nearest Neighbor")
-    print("3. Part 3")
+    print("3. Part 3: Titatnic Dataset")
     choice = input("Option: ")
     if choice == '1':
         print("Welcome to afranco/tcast054's Feature Selection Algorithm.")
@@ -232,6 +251,27 @@ def main():
             print("Feature {1, 15, 27} accuracy should be about 0.949")
         
     elif choice == '3':
+        print("Welcome to afranco/tcast054's Feature Selection Algorithm for Titanic dataset.")
+        total_features = input("Please enter total number of features: ")
+        print("Type the number of the algorithm you want to run.")
+        print("1. Forward Selection")
+        print("2. Backward Elimination")
+        choice = input("Option: ")
+
+        classifier = Classifier()
+        df = pd.DataFrame
+        df = pd.read_csv('titanic-clean.txt', sep='\s+', engine="python", names=["Survived", "Pclass", "Sex", "Age", "SibSp", "Parch", "Fare"])
+        # print(df)
+
+        feature_names = list(df.columns)
+        # print(feature_names)
+
+        if choice == '1':
+            forward_selection(total_features, feature_names, classifier, df)
+        elif choice == '2':
+            pass   
+        else:
+            print("Invalid option. Please select 1, 2, or 3.")
         pass
     else:
         print("Invalid option. Please select 1, 2, or 3.")
