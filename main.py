@@ -4,6 +4,8 @@ from typing import List
 import time
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
+from scipy.spatial.distance import cdist
+import numpy as np
 
 # EVAL FUNCTION STUB, RETURNS RANDOM %VAL
 def evalFunc(upperbound=100):
@@ -41,32 +43,38 @@ class Node:
 class Classifier:
     def __init__(self):
         self.data = []
-        self.data = []
 
     def train(self, training_instances):
         # print("\nhello world")
         # print(training_instances)
-        self.data.append(training_instances)
+        self.data = training_instances
+        self._precompute_distances()
         # for i in range(training_instances.shape[0]):
         #     self.labels.append(float(training_instances.iloc[i,0]))
         #     self.features.append(training_instances.iloc[i, 1:].values.tolist())
         
+    def _precompute_distances(self):
+        # print(self.data)
+        features = self.data.iloc[:, 1].values
+        # print(features)
+
+        if features.ndim == 1:
+            features = features[:, np.newaxis]
+
+        self.distances = cdist(features, features, metric='euclidean')
+        # print(self.distances.shape)
+
     def test(self, test_instance):
-        distances = []
         test_features = test_instance[1:].values
         # print(test_features)
         # print(self.data[0].shape[0])
-        for train_instance in range(self.data[0].shape[0]):
-            train_features = self.data[0].iloc[train_instance][1:].values
-            # print(train_features)
-            distance = euclidean_distance(test_features, train_features)
-            distances.append(distance)
-            # print(f"Distance between (i = {train_instance}) {test_features} and {train_features} is {distance}")
+        test_distances = np.linalg.norm(self.data.iloc[:, 1:].values - test_features, axis=1)
         # print(distances)
-        nearest = distances.index(min(distances))
-        # print(f"The nearest point was at {nearest}, with distance of {min(distances)}")
+        nearest = np.argmin(test_distances)
+        # print(f"The nearest point was at {nearest}, with distance of {min(test_distances)}")
         # print(self.data[0].iloc[nearest,0])
-        return self.data[0].iloc[nearest,0]
+        # print(self.data)
+        return self.data.iloc[nearest,0]
     
 
 class Validator:
@@ -81,10 +89,10 @@ class Validator:
         correct_count = 0                   # tracks accuracy
         # print(target_feature)
         # repeat reserving single instance for all instances 
-        for testInstance in tqdm(range(num_instances), desc="Processing instances for feature \"{}\"".format(feature), unit="instance"): # https://www.geeksforgeeks.org/progress-bars-in-python/
+        for testInstance in range(num_instances): #tqdm(range(num_instances), desc="Processing instances for feature \"{}\"".format(feature), unit="instance"): # https://www.geeksforgeeks.org/progress-bars-in-python/
             # reserve testInstance as test data, use other instances as training data
             # print(f"Reserving instance {testInstance} as test data. Using other instances as training data.")
-            classifier.data = []
+            classifier.data = None
             training_data = dataset.drop(testInstance)
             classifier.train(training_data)
             test_row = dataset.iloc[testInstance]
@@ -133,13 +141,12 @@ def forward_selection(n, feature_names, classifier, dataset):
         print("\nFeature set {} was best, accuracy is {:.2f}\n".format([feature_names[j] for j in highestAccuracyPtr.data], highestAccuracyPtr.get_highest_accuracy()))
         if (highestAccuracyPtr.get_highest_accuracy() <= selected_node.get_highest_accuracy()):
             print("(Warning, Accuracy has decreased!)")
-            print("Best feature subset is {}, which has an accuracy of {:.2f}".format([feature_names[j] for j in selected_node.data], selected_node.get_highest_accuracy()))
+            print("Best feature subset is {}, which has an accuracy of {:.2f}".format([feature_names[j] for j in highestAccuracyPtr.data], highestAccuracyPtr.get_highest_accuracy()))
             break
         else:
             selected_node = highestAccuracyPtr
 
 def euclidean_distance(p1, p2):
-
     return sum((a-b) ** 2 for a,b in zip(p1,p2)) ** 0.5
 
 
